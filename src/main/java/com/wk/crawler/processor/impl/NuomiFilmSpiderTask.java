@@ -34,6 +34,11 @@ public class NuomiFilmSpiderTask extends BaseSpiderTask {
                 page.getHtml()
                         .xpath("/html/body[@class='gl-normal-screen']/div[@class='p-cinema-main clearfix']/div[@class='p-cinema-left']/div[@class='w-cinema-detail clearfix']/div[@class='content']/h2/a/text()")
                         .toString());
+        page.putField(
+                "filmPicUrl",
+                page.getHtml()
+                        .xpath("/html/body[@class='gl-normal-screen']/div[@class='p-cinema-main clearfix']/div[@class='p-cinema-left']/div[@class='w-cinema-detail clearfix']/img[@class='cinema-img']/@src")
+                        .toString());
         if (page.getResultItems().get(CrawlerConstants.RESULT_KEY_FILM_NAME) == null) {
             // skip this page
             page.setSkip(true);

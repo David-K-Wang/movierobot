@@ -6,6 +6,7 @@ import java.util.Map;
 import com.wk.crawler.constant.CrawlerConstants;
 import com.wk.crawler.processor.impl.NuomiCinemaSpiderTask;
 import com.wk.crawler.processor.impl.NuomiFilmSpiderTask;
+import com.wk.crawler.processor.impl.NuomiTicketSpiderTask;
 
 public class SpiderFactory {
 
@@ -13,7 +14,7 @@ public class SpiderFactory {
 
     static {
         registerTaskContext(CrawlerConstants.SPIDER_CTX_NAME_NUOMI, (BaseSpiderTask) new NuomiCinemaSpiderTask(),
-                (BaseSpiderTask) new NuomiFilmSpiderTask());
+                (BaseSpiderTask) new NuomiFilmSpiderTask(), (BaseSpiderTask) new NuomiTicketSpiderTask());
     }
 
     public static SpiderTaskContext findTaskCtxByName(String ctxName) {

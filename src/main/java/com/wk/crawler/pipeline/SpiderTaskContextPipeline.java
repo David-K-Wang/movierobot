@@ -1,7 +1,7 @@
 package com.wk.crawler.pipeline;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -25,38 +25,40 @@ public class SpiderTaskContextPipeline implements Pipeline {
     @SuppressWarnings("unchecked")
     @Override
     public void process(ResultItems resultItems, Task task) {
-        List<CinemaDto> cinemaFileDtos;
+        Map<String, CinemaDto> cinemaDtoMap;
         if (ctx.getCtxLocal().containsKey(CrawlerConstants.CTX_LOCAL_CINEMA)) {
-            cinemaFileDtos = (List<CinemaDto>) ctx.getCtxLocal().get(CrawlerConstants.CTX_LOCAL_CINEMA);
+            cinemaDtoMap = (Map<String, CinemaDto>) ctx.getCtxLocal().get(CrawlerConstants.CTX_LOCAL_CINEMA);
         } else {
-            cinemaFileDtos = new ArrayList<CinemaDto>();
-            ctx.getCtxLocal().put(CrawlerConstants.CTX_LOCAL_CINEMA, cinemaFileDtos);
+            cinemaDtoMap = new HashMap<String, CinemaDto>();
+            ctx.getCtxLocal().put(CrawlerConstants.CTX_LOCAL_CINEMA, cinemaDtoMap);
         }
 
         String cinemaId = resultItems.get(CrawlerConstants.RESULT_KEY_CINEMA_ID);
         String cinemaName = resultItems.get(CrawlerConstants.RESULT_KEY_CINEMA_NAME);
         if (StringUtils.isNotEmpty(cinemaId) && StringUtils.isNotEmpty(cinemaName)) {
             CinemaDto cinemaDto = new CinemaDto();
-            cinemaFileDtos.add(cinemaDto);
+            cinemaDtoMap.put(cinemaId, cinemaDto);
             cinemaDto.setCinemaId(cinemaId);
             cinemaDto.setCinemaName(cinemaName);
         }
 
-        List<FilmDto> filmDtos;
+        Map<String, FilmDto> filmDtoMap;
         if (ctx.getCtxLocal().containsKey(CrawlerConstants.CTX_LOCAL_FILM)) {
-            filmDtos = (List<FilmDto>) ctx.getCtxLocal().get(CrawlerConstants.CTX_LOCAL_FILM);
+            filmDtoMap = (Map<String, FilmDto>) ctx.getCtxLocal().get(CrawlerConstants.CTX_LOCAL_FILM);
         } else {
-            filmDtos = new ArrayList<FilmDto>();
-            ctx.getCtxLocal().put(CrawlerConstants.CTX_LOCAL_FILM, filmDtos);
+            filmDtoMap = new HashMap<String, FilmDto>();
+            ctx.getCtxLocal().put(CrawlerConstants.CTX_LOCAL_FILM, filmDtoMap);
         }
 
         String filmId = resultItems.get(CrawlerConstants.RESULT_KEY_FILM_ID);
         String filmName = resultItems.get(CrawlerConstants.RESULT_KEY_FILM_NAME);
+        String filmPicUrl = resultItems.get("filmPicUrl");
         if (StringUtils.isNotEmpty(filmId) && StringUtils.isNotEmpty(filmName)) {
             FilmDto filmDto = new FilmDto();
-            filmDtos.add(filmDto);
+            filmDtoMap.put(filmId, filmDto);
             filmDto.setFilmId(cinemaId);
             filmDto.setFilmName(cinemaName);
+            filmDto.setFilmPicUrl(filmPicUrl);
         }
     }
 
