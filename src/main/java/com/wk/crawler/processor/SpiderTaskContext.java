@@ -12,6 +12,8 @@ public class SpiderTaskContext implements Runnable {
 
     private String contextName = "";
 
+    private String spiderSource = "";
+
     /**
      * Tasks need to be executed by sequence
      */
@@ -22,8 +24,9 @@ public class SpiderTaskContext implements Runnable {
      */
     private Map<String, Object> ctxLocal = new HashMap<String, Object>();
 
-    public SpiderTaskContext(String name, BaseSpiderTask... baseSpiderTasks) {
+    public SpiderTaskContext(String name, String source, BaseSpiderTask... baseSpiderTasks) {
         this.contextName = name;
+        this.setSpiderSource(source);
         for (BaseSpiderTask task : baseSpiderTasks) {
             task.setSpiderTaskContext(this);
         }
@@ -68,5 +71,13 @@ public class SpiderTaskContext implements Runnable {
     @Override
     public void run() {
         this.fireTaskChain();
+    }
+
+    public String getSpiderSource() {
+        return spiderSource;
+    }
+
+    public void setSpiderSource(String spiderSource) {
+        this.spiderSource = spiderSource;
     }
 }

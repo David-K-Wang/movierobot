@@ -35,11 +35,15 @@ public class SpiderTaskContextPipeline implements Pipeline {
 
         String cinemaId = resultItems.get(CrawlerConstants.RESULT_KEY_CINEMA_ID);
         String cinemaName = resultItems.get(CrawlerConstants.RESULT_KEY_CINEMA_NAME);
+        String cinemaAddress = resultItems.get("cinemaAddress");
+        String cinemaPhoneNum = resultItems.get("cinemaPhoneNum");
         if (StringUtils.isNotEmpty(cinemaId) && StringUtils.isNotEmpty(cinemaName)) {
             CinemaDto cinemaDto = new CinemaDto();
             cinemaDtoMap.put(cinemaId, cinemaDto);
             cinemaDto.setCinemaId(cinemaId);
             cinemaDto.setCinemaName(cinemaName);
+            cinemaDto.setCimemaAddress(cinemaAddress);
+            cinemaDto.setCimemaPhoneNum(cinemaPhoneNum);
         }
 
         Map<String, FilmDto> filmDtoMap;
@@ -53,12 +57,14 @@ public class SpiderTaskContextPipeline implements Pipeline {
         String filmId = resultItems.get(CrawlerConstants.RESULT_KEY_FILM_ID);
         String filmName = resultItems.get(CrawlerConstants.RESULT_KEY_FILM_NAME);
         String filmPicUrl = resultItems.get("filmPicUrl");
+        String filmDesc = resultItems.get("filmDesc");
         if (StringUtils.isNotEmpty(filmId) && StringUtils.isNotEmpty(filmName)) {
             FilmDto filmDto = new FilmDto();
             filmDtoMap.put(filmId, filmDto);
-            filmDto.setFilmId(cinemaId);
-            filmDto.setFilmName(cinemaName);
+            filmDto.setFilmId(filmId);
+            filmDto.setFilmName(filmName);
             filmDto.setFilmPicUrl(filmPicUrl);
+            filmDto.setFilmDesc(filmDesc);
         }
     }
 

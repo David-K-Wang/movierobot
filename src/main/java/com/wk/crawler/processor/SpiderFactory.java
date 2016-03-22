@@ -13,7 +13,7 @@ public class SpiderFactory {
     private static Map<String, SpiderTaskContext> spiderTaskRegistry = new HashMap<String, SpiderTaskContext>();
 
     static {
-        registerTaskContext(CrawlerConstants.SPIDER_CTX_NAME_NUOMI, (BaseSpiderTask) new NuomiCinemaSpiderTask(),
+        registerTaskContext(CrawlerConstants.SPIDER_CTX_NAME_NUOMI, "糯米", (BaseSpiderTask) new NuomiCinemaSpiderTask(),
                 (BaseSpiderTask) new NuomiFilmSpiderTask(), (BaseSpiderTask) new NuomiTicketSpiderTask());
     }
 
@@ -28,7 +28,7 @@ public class SpiderFactory {
         spiderTaskRegistry.put(ctx.getContextName(), ctx);
     }
 
-    public static void registerTaskContext(String ctxName, BaseSpiderTask... tasks) {
-        spiderTaskRegistry.put(ctxName, new SpiderTaskContext(ctxName, tasks));
+    public static void registerTaskContext(String ctxName, String source, BaseSpiderTask... tasks) {
+        spiderTaskRegistry.put(ctxName, new SpiderTaskContext(ctxName, source, tasks));
     }
 }

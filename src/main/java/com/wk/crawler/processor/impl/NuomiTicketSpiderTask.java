@@ -8,12 +8,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
-import us.codecraft.webmagic.pipeline.FilePipeline;
 import us.codecraft.webmagic.pipeline.Pipeline;
 
 import com.wk.crawler.constant.CrawlerConstants;
 import com.wk.crawler.dto.CinemaDto;
 import com.wk.crawler.dto.FilmDto;
+import com.wk.crawler.pipeline.NuomiDbPipeline;
 import com.wk.crawler.processor.BaseSpiderTask;
 
 public class NuomiTicketSpiderTask extends BaseSpiderTask {
@@ -29,6 +29,7 @@ public class NuomiTicketSpiderTask extends BaseSpiderTask {
         return this.site;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void process(Page page) {
         page.addTargetRequests(this.getTargetRequests(page));
@@ -38,57 +39,85 @@ public class NuomiTicketSpiderTask extends BaseSpiderTask {
         page.putField("cinemaId", cinemaId);
         page.putField("filmId", filmId);
 
-        for (int i = 1; i <= 20; i++) {
-            String row = page
-                    .getHtml()
-                    .xpath("/html/body/div[@id='j-choose-list']/div[@id='j-movie-list0']/div[@class='table']/table/tbody/tr["
-                            + i + "]/td[1]/text()").toString();
+        Map<String, CinemaDto> cinemaMap = (Map<String, CinemaDto>) this.getTaskCtx().getCtxLocal()
+                .get(CrawlerConstants.CTX_LOCAL_CINEMA);
+        Map<String, FilmDto> filmMap = (Map<String, FilmDto>) this.getTaskCtx().getCtxLocal()
+                .get(CrawlerConstants.CTX_LOCAL_FILM);
+        CinemaDto cinemaDto = cinemaMap.get(cinemaId);
+        FilmDto filmDto = filmMap.get(filmId);
 
-            if (StringUtils.isEmpty(row)) {
-                continue;
-            }
-
-            page.putField(
-                    "time_today_" + i,
-                    page.getHtml()
-                            .xpath("/html/body/div[@id='j-choose-list']/div[@id='j-movie-list0']/div[@class='table']/table/tbody/tr["
-                                    + i + "]/td[1]/text()").toString());
-            page.putField(
-                    "style_today_" + i,
-                    page.getHtml()
-                            .xpath("/html/body/div[@id='j-choose-list']/div[@id='j-movie-list0']/div[@class='table']/table/tbody/tr["
-                                    + i + "]/td[2]/text()").toString());
-
-            page.putField(
-                    "hall_today_" + i,
-                    page.getHtml()
-                            .xpath("/html/body/div[@id='j-choose-list']/div[@id='j-movie-list0']/div[@class='table']/table/tbody/tr["
-                                    + i + "]/td[3]/text()").toString());
-            page.putField(
-                    "discountPrice_today_" + i,
-                    page.getHtml()
-                            .xpath("/html/body/div[@id='j-choose-list']/div[@id='j-movie-list0']/div[@class='table']/table/tbody/tr["
-                                    + i + "]/td[4]/span[@class='hover nuomi-price']/text()").toString());
-
-            page.putField(
-                    "originPrice_today_" + i,
-                    page.getHtml()
-                            .xpath("/html/body/div[@id='j-choose-list']/div[@id='j-movie-list0']/div[@class='table']/table/tbody/tr["
-                                    + i + "]/td[4]/del/text()").toString());
-
-            page.putField(
-                    "purchaseUrl_today_" + i,
-                    page.getHtml()
-                            .xpath("/html/body/div[@id='j-choose-list']/div[@id='j-movie-list0']/div[@class='table']/table/tbody/tr["
-                                    + i + "]/td[5]/a[@class='btn-choose-seat']/@href").toString());
+        if (cinemaDto != null) {
+            page.putField("cinemaName", cinemaDto.getCinemaName());
+            page.putField("cinemaAddress", cinemaDto.getCimemaAddress());
+            page.putField("cinemaPhoneNum", cinemaDto.getCimemaPhoneNum());
+        }
+        if (filmDto != null) {
+            page.putField("filmName", filmDto.getFilmName());
+            page.putField("filmPicUrl", filmDto.getFilmPicUrl());
+            page.putField("filmDesc", filmDto.getFilmDesc());
         }
 
-        if (page.getResultItems().get("cinemaId") == null || page.getResultItems().get("time_today_1") == null) {
+        page.putField(
+                "date1",
+                page.getHtml()
+                        .xpath("/html/body/div[@id='j-choose-list']/dl[@id='j-movie-date']/dd[@class='hover']/a[@class='movie-date']/text()")
+                        .toString());
+        page.putField(
+                "date2",
+                page.getHtml()
+                        .xpath("/html/body/div[@id='j-choose-list']/dl[@id='j-movie-date']/dd[2]/a[@class='movie-date']/text()")
+                        .toString());
+
+        for (int dateNum = 1; dateNum <= 2; dateNum++) {
+            for (int i = 1; i <= 20; i++) {
+                String row = page
+                        .getHtml()
+                        .xpath("/html/body/div[@id='j-choose-list']/div[@id='j-movie-list0']/div[@class='table']/table/tbody/tr["
+                                + i + "]/td[1]/text()").toString();
+
+                if (StringUtils.isEmpty(row)) {
+                    continue;
+                }
+
+                page.putField(
+                        "time_date" + dateNum + "_slot" + i,
+                        page.getHtml()
+                                .xpath("/html/body/div[@id='j-choose-list']/div[@id='j-movie-list0']/div[@class='table']/table/tbody/tr["
+                                        + i + "]/td[1]/text()").toString());
+                page.putField(
+                        "style_date" + dateNum + "_slot" + i,
+                        page.getHtml()
+                                .xpath("/html/body/div[@id='j-choose-list']/div[@id='j-movie-list0']/div[@class='table']/table/tbody/tr["
+                                        + i + "]/td[2]/text()").toString());
+
+                page.putField(
+                        "hall_date" + dateNum + "_slot" + i,
+                        page.getHtml()
+                                .xpath("/html/body/div[@id='j-choose-list']/div[@id='j-movie-list0']/div[@class='table']/table/tbody/tr["
+                                        + i + "]/td[3]/text()").toString());
+                page.putField(
+                        "discountPrice_date" + dateNum + "_slot" + i,
+                        page.getHtml()
+                                .xpath("/html/body/div[@id='j-choose-list']/div[@id='j-movie-list0']/div[@class='table']/table/tbody/tr["
+                                        + i + "]/td[4]/span[@class='hover nuomi-price']/text()").toString());
+
+                page.putField(
+                        "originPrice_date" + dateNum + "_slot" + i,
+                        page.getHtml()
+                                .xpath("/html/body/div[@id='j-choose-list']/div[@id='j-movie-list0']/div[@class='table']/table/tbody/tr["
+                                        + i + "]/td[4]/del/text()").toString());
+
+                page.putField(
+                        "purchaseUrl_date" + dateNum + "_slot" + i,
+                        page.getHtml()
+                                .xpath("/html/body/div[@id='j-choose-list']/div[@id='j-movie-list0']/div[@class='table']/table/tbody/tr["
+                                        + i + "]/td[5]/a[@class='btn-choose-seat']/@href").toString());
+            }
+        }
+
+        if (page.getResultItems().get("cinemaId") == null || page.getResultItems().get("time_date1_slot1") == null) {
             // skip this page
             page.setSkip(true);
-        } else {
-            // 补充电影和影院的其它信息
-
         }
     }
 
@@ -104,7 +133,7 @@ public class NuomiTicketSpiderTask extends BaseSpiderTask {
 
     @Override
     public Pipeline getPipeline() {
-        return new FilePipeline("D:/tmp");
+        return new NuomiDbPipeline(getTaskCtx());
     }
 
     @SuppressWarnings("unchecked")

@@ -35,6 +35,11 @@ public class NuomiFilmSpiderTask extends BaseSpiderTask {
                         .xpath("/html/body[@class='gl-normal-screen']/div[@class='p-cinema-main clearfix']/div[@class='p-cinema-left']/div[@class='w-cinema-detail clearfix']/div[@class='content']/h2/a/text()")
                         .toString());
         page.putField(
+                "filmDesc",
+                page.getHtml()
+                        .xpath("/html/body[@class='gl-normal-screen']/div[@class='p-cinema-main clearfix']/div[@class='p-cinema-left']/div[@class='w-cinema-detail clearfix']/div[@class='content']/div[@class='de']/p[2]/text()")
+                        .toString());
+        page.putField(
                 "filmPicUrl",
                 page.getHtml()
                         .xpath("/html/body[@class='gl-normal-screen']/div[@class='p-cinema-main clearfix']/div[@class='p-cinema-left']/div[@class='w-cinema-detail clearfix']/img[@class='cinema-img']/@src")
