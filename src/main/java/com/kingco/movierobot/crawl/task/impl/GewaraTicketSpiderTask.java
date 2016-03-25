@@ -67,12 +67,13 @@ public class GewaraTicketSpiderTask extends BaseSpiderTask {
 
             String timeSlotStr = page
                     .getHtml()
-                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body']/ul[@class='clear']/li[1]/span[@class='opitime']/b/text()")
-                    .toString();
+                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body']/ul[@class='clear']/li"
+                            + liIndex + "/span[@class='opitime']/b/text()").toString();
             String style = page
                     .getHtml()
                     .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body']/ul[@class='clear']/li"
                             + liIndex + "/span[@class='opiEdition']/em[@class='left']/text()").toString();
+
             String hall = page
                     .getHtml()
                     .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body']/ul[@class='clear']/li"
@@ -146,9 +147,7 @@ public class GewaraTicketSpiderTask extends BaseSpiderTask {
                 }
             }
         }
-        // return new String[] {
-        // "http://www.gewara.com/movie/ajax/getOpiItem.xhtml?movieid=284316908&fyrq=2016-03-25&cid=256820412"
-        // };
+
         return entranceUrls.toArray(new String[entranceUrls.size()]);
     }
 
