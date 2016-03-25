@@ -26,11 +26,11 @@
 
 	<tx:annotation-driven />
 	
-	<context:component-scan base-package="com.wk, com.kingco.movierobot">
+	<context:component-scan base-package="com.kingco.movierobot">
 		<context:exclude-filter type="annotation"
 			expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
-	<bean class="com.wk.utils.ClassBeanFactory" lazy-init="false" />
+	<bean class="com.kingco.movierobot.common.util.ClassBeanFactory" lazy-init="false" />
 	
 	<!-- Properties -->
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -51,7 +51,7 @@
 	<!-- Hibernate session factory -->
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
 	    <property name="dataSource" ref="dataSource" />
-        <property name="packagesToScan" value="com.wk.**.model" />
+        <property name="packagesToScan" value="com.kingco.**.bo" />
         <property name="namingStrategy">
             <bean class="org.hibernate.cfg.ImprovedNamingStrategy" />
         </property>

@@ -41,8 +41,8 @@ public class GewaraTicketSpiderTask extends BaseSpiderTask {
             ctx.putCtxLocalItem(CrawlConstants.CTX_LOCAL_TICKET, ticketMap);
         }
 
-        String cinemaId = page.getUrl().regex("movieid=([0-9]{2,30})").toString();
-        String filmId = page.getUrl().regex("cid=([0-9]{2,30})").toString();
+        String filmId = page.getUrl().regex("movieid=([0-9]{2,30})").toString();
+        String cinemaId = page.getUrl().regex("cid=([0-9]{2,30})").toString();
         String dateStr = page.getUrl().regex("fyrq=([0-9]{2,4}-[0-9]{2,4}-[0-9]{2,4})").toString();
 
         FilmDto filmDto = filmDtoMap.get(filmId);
@@ -89,7 +89,7 @@ public class GewaraTicketSpiderTask extends BaseSpiderTask {
         for (String cinemaId : cinemaDtoMap.keySet()) {
             for (String filmId : filmDtoMap.keySet()) {
                 Date date = new Date();
-                Date endDate = calculateDaysLater(date, 15);
+                Date endDate = calculateDaysLater(date, 1);
                 while (date.before(endDate)) {
                     entranceUrls.add("http://www.gewara.com/movie/ajax/getOpiItem.xhtml?movieid=" + filmId + "&fyrq="
                             + sdf.format(date) + "&cid=" + cinemaId);
