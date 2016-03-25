@@ -1,5 +1,6 @@
 package com.kingco.movierobot.crawl.task.impl;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -8,6 +9,8 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
@@ -57,7 +60,54 @@ public class GewaraTicketSpiderTask extends BaseSpiderTask {
         ticket.setCityName("南京");
         ticket.setMovieName(filmDto.getFilmName());
         ticket.setSourceType("格瓦拉");
-        ticketMap.put(ticket.generateId(), ticket);
+
+        for (int i = 0; i < 30; i++) {
+            String liIndex = "";
+            if (i > 0) {
+                liIndex = "[" + i + "]";
+            }
+            String timeSlotStr = page
+                    .getHtml()
+                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body ']/ul[@class='clear']/li"
+                            + liIndex + "/span[@class='opiTime']/b/text()").toString();
+            String Style = page
+                    .getHtml()
+                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body ']/ul[@class='clear']/li"
+                            + liIndex + "/span[@class='td opiEdition']/b[@class='hd']/text()").toString();
+            String hall = page
+                    .getHtml()
+                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body ']/ul[@class='clear']/li"
+                            + liIndex + "/span[@class='td opiRoom']/b[@class='hd']/text()").toString();
+            String price = page
+                    .getHtml()
+                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body ']/ul[@class='clear']/li"
+                            + liIndex + "/span[@class='td opiPrice']/b[@class='hd']/text()").toString();
+            String originalPrice = page
+                    .getHtml()
+                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body ']/ul[@class='clear']/li"
+                            + liIndex + "/span[@class='td opiPrice']/em[@class='bd']/text()").toString();
+            String sourceUrl = page
+                    .getHtml()
+                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body ']/ul[@class='clear']/li"
+                            + liIndex + "/span[@class='td opiurl']/a[@class='ui_btn_34']/@href").toString();
+
+            if (i > 0 && StringUtils.isEmpty(timeSlotStr)) {
+                break;
+            }
+
+            try {
+                ticket.setMovieTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(dateStr + " " + timeSlotStr));
+                ticket.setHall(hall);
+                ticket.setCurrentPrice(Integer.parseInt(price));
+                ticket.setOriginalPrice(Integer.parseInt(originalPrice));
+                ticket.setSourceUrl(sourceUrl);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                continue;
+            }
+
+            ticketMap.put(ticket.generateId(), ticket);
+        }
     }
 
     @Override
