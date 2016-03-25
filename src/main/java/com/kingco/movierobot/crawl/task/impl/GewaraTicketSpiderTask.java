@@ -1,6 +1,5 @@
 package com.kingco.movierobot.crawl.task.impl;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -9,6 +8,8 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -61,35 +62,33 @@ public class GewaraTicketSpiderTask extends BaseSpiderTask {
         ticket.setMovieName(filmDto.getFilmName());
         ticket.setSourceType("格瓦拉");
 
-        for (int i = 0; i < 30; i++) {
-            String liIndex = "";
-            if (i > 0) {
-                liIndex = "[" + i + "]";
-            }
+        for (int i = 1; i < 30; i++) {
+            String liIndex = "[" + i + "]";
+
             String timeSlotStr = page
                     .getHtml()
-                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body ']/ul[@class='clear']/li"
-                            + liIndex + "/span[@class='opiTime']/b/text()").toString();
-            String Style = page
+                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body']/ul[@class='clear']/li[1]/span[@class='opitime']/b/text()")
+                    .toString();
+            String style = page
                     .getHtml()
-                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body ']/ul[@class='clear']/li"
-                            + liIndex + "/span[@class='td opiEdition']/b[@class='hd']/text()").toString();
+                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body']/ul[@class='clear']/li"
+                            + liIndex + "/span[@class='opiEdition']/em[@class='left']/text()").toString();
             String hall = page
                     .getHtml()
-                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body ']/ul[@class='clear']/li"
-                            + liIndex + "/span[@class='td opiRoom']/b[@class='hd']/text()").toString();
+                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body']/ul[@class='clear']/li"
+                            + liIndex + "/span[@class='opiRoom ui_roomType']/label/text()").toString();
             String price = page
                     .getHtml()
-                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body ']/ul[@class='clear']/li"
-                            + liIndex + "/span[@class='td opiPrice']/b[@class='hd']/text()").toString();
+                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body']/ul[@class='clear']/li"
+                            + liIndex + "/span[@class='opiPrice']/b/text()").toString();
             String originalPrice = page
                     .getHtml()
-                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body ']/ul[@class='clear']/li"
-                            + liIndex + "/span[@class='td opiPrice']/em[@class='bd']/text()").toString();
+                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body']/ul[@class='clear']/li"
+                            + liIndex + "/span[@class='opiPrice']/em/text()").toString();
             String sourceUrl = page
                     .getHtml()
-                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body ']/ul[@class='clear']/li"
-                            + liIndex + "/span[@class='td opiurl']/a[@class='ui_btn_34']/@href").toString();
+                    .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body']/ul[@class='clear']/li"
+                            + liIndex + "/span[@class='opiurl']/a/@href").toString();
 
             if (i > 0 && StringUtils.isEmpty(timeSlotStr)) {
                 break;
@@ -98,10 +97,10 @@ public class GewaraTicketSpiderTask extends BaseSpiderTask {
             try {
                 ticket.setMovieTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(dateStr + " " + timeSlotStr));
                 ticket.setHall(hall);
-                ticket.setCurrentPrice(Integer.parseInt(price));
-                ticket.setOriginalPrice(Integer.parseInt(originalPrice));
+                ticket.setCurrentPrice(trimAndParseInteger(price));
+                ticket.setOriginalPrice(trimAndParseInteger(originalPrice));
                 ticket.setSourceUrl(sourceUrl);
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 continue;
             }
@@ -147,7 +146,9 @@ public class GewaraTicketSpiderTask extends BaseSpiderTask {
                 }
             }
         }
-
+        // return new String[] {
+        // "http://www.gewara.com/movie/ajax/getOpiItem.xhtml?movieid=284316908&fyrq=2016-03-25&cid=256820412"
+        // };
         return entranceUrls.toArray(new String[entranceUrls.size()]);
     }
 
@@ -162,5 +163,14 @@ public class GewaraTicketSpiderTask extends BaseSpiderTask {
         calendar.add(Calendar.DATE, days);
         Date endDate = calendar.getTime();
         return endDate;
+    }
+
+    private int trimAndParseInteger(String intStr) throws Exception {
+        Pattern p = Pattern.compile("(\\d+)");
+        Matcher matcher = p.matcher(intStr);
+        if (matcher.find()) {
+            return Integer.parseInt(matcher.group(1));
+        }
+        throw new Exception();
     }
 }
