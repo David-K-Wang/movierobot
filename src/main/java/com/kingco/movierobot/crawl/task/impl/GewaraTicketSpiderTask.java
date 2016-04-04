@@ -5,17 +5,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-
-import us.codecraft.webmagic.Page;
-import us.codecraft.webmagic.Site;
-import us.codecraft.webmagic.pipeline.Pipeline;
 
 import com.kingco.movierobot.common.bo.MovieTicketInfo;
 import com.kingco.movierobot.crawl.constant.CrawlConstants;
@@ -24,6 +20,10 @@ import com.kingco.movierobot.crawl.dto.FilmDto;
 import com.kingco.movierobot.crawl.pipeline.DatabaseTicketPipeline;
 import com.kingco.movierobot.crawl.process.SpiderTaskContext;
 import com.kingco.movierobot.crawl.task.BaseSpiderTask;
+
+import us.codecraft.webmagic.Page;
+import us.codecraft.webmagic.Site;
+import us.codecraft.webmagic.pipeline.Pipeline;
 
 public class GewaraTicketSpiderTask extends BaseSpiderTask {
 
@@ -41,7 +41,7 @@ public class GewaraTicketSpiderTask extends BaseSpiderTask {
         if (ctx.containsCtxLocalItem(CrawlConstants.CTX_LOCAL_TICKET)) {
             ticketMap = ctx.getCtxLocalItem(CrawlConstants.CTX_LOCAL_TICKET);
         } else {
-            ticketMap = new HashMap<String, MovieTicketInfo>();
+            ticketMap = new ConcurrentHashMap<String, MovieTicketInfo>();
             ctx.putCtxLocalItem(CrawlConstants.CTX_LOCAL_TICKET, ticketMap);
         }
 
@@ -65,31 +65,31 @@ public class GewaraTicketSpiderTask extends BaseSpiderTask {
         for (int i = 1; i < 30; i++) {
             String liIndex = "[" + i + "]";
 
-            String timeSlotStr = page
-                    .getHtml()
+            String timeSlotStr = page.getHtml()
                     .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body']/ul[@class='clear']/li"
-                            + liIndex + "/span[@class='opitime']/b/text()").toString();
-            String style = page
-                    .getHtml()
+                            + liIndex + "/span[@class='opitime']/b/text()")
+                    .toString();
+            String style = page.getHtml()
                     .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body']/ul[@class='clear']/li"
-                            + liIndex + "/span[@class='opiEdition']/em[@class='left']/text()").toString();
+                            + liIndex + "/span[@class='opiEdition']/em[@class='left']/text()")
+                    .toString();
 
-            String hall = page
-                    .getHtml()
+            String hall = page.getHtml()
                     .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body']/ul[@class='clear']/li"
-                            + liIndex + "/span[@class='opiRoom ui_roomType']/label/text()").toString();
-            String price = page
-                    .getHtml()
+                            + liIndex + "/span[@class='opiRoom ui_roomType']/label/text()")
+                    .toString();
+            String price = page.getHtml()
                     .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body']/ul[@class='clear']/li"
-                            + liIndex + "/span[@class='opiPrice']/b/text()").toString();
-            String originalPrice = page
-                    .getHtml()
+                            + liIndex + "/span[@class='opiPrice']/b/text()")
+                    .toString();
+            String originalPrice = page.getHtml()
                     .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body']/ul[@class='clear']/li"
-                            + liIndex + "/span[@class='opiPrice']/em/text()").toString();
-            String sourceUrl = page
-                    .getHtml()
+                            + liIndex + "/span[@class='opiPrice']/em/text()")
+                    .toString();
+            String sourceUrl = page.getHtml()
                     .xpath("/html/body/div[@class='chooseOpi opend']/div[@class='chooseOpi_body']/ul[@class='clear']/li"
-                            + liIndex + "/span[@class='opiurl']/a/@href").toString();
+                            + liIndex + "/span[@class='opiurl']/a/@href")
+                    .toString();
 
             if (i > 0 && StringUtils.isEmpty(timeSlotStr)) {
                 break;
@@ -117,7 +117,7 @@ public class GewaraTicketSpiderTask extends BaseSpiderTask {
 
     @Override
     public int getProcessThreadNum() {
-        return 5;
+        return 3;
     }
 
     @Override

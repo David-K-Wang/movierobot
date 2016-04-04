@@ -10,7 +10,8 @@ public class CrawlServiceImpl implements CrawlService {
 
     @Override
     public void startCrawl() {
-        SpiderTaskFactory.findTaskCtxByName("gewara").fireTaskChain();
+        new Thread(SpiderTaskFactory.findTaskCtxByName("gewara")).start();
+        new Thread(SpiderTaskFactory.findTaskCtxByName("nuomi")).start();
     }
 
 }

@@ -7,6 +7,9 @@ import com.kingco.movierobot.crawl.task.BaseSpiderTask;
 import com.kingco.movierobot.crawl.task.impl.GewaraCinemaSpiderTask;
 import com.kingco.movierobot.crawl.task.impl.GewaraFilmSpiderTask;
 import com.kingco.movierobot.crawl.task.impl.GewaraTicketSpiderTask;
+import com.kingco.movierobot.crawl.task.impl.NuomiCinemaSpiderTask;
+import com.kingco.movierobot.crawl.task.impl.NuomiFilmSpiderTask;
+import com.kingco.movierobot.crawl.task.impl.NuomiTicketSpiderTask;
 
 public class SpiderTaskFactory {
 
@@ -15,6 +18,8 @@ public class SpiderTaskFactory {
     static {
         registerTaskContext("gewara", new GewaraCinemaSpiderTask(), new GewaraFilmSpiderTask(),
                 new GewaraTicketSpiderTask());
+        registerTaskContext("nuomi", new NuomiCinemaSpiderTask(), new NuomiFilmSpiderTask(),
+                new NuomiTicketSpiderTask());
     }
 
     public static SpiderTaskContext findTaskCtxByName(String ctxName) {

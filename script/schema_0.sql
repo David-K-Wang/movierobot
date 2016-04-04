@@ -11,6 +11,7 @@ CREATE TABLE `movie_ticket_info` (
   `movie_pic_url` varchar(1024) NOT NULL DEFAULT '',
   `source_url` varchar(1024) NOT NULL DEFAULT '',
   `hall` varchar(128) NOT NULL DEFAULT '',
+	`movie_desc` varchar(1024) NOT NULL DEFAULT '',
   `movie_time` datetime NOT NULL,
   `update_time` datetime NOT NULL,
   PRIMARY KEY (`id`)

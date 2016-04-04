@@ -14,9 +14,9 @@ import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.pipeline.Pipeline;
 
-public class GewaraFilmSpiderTask extends BaseSpiderTask {
+public class NuomiFilmSpiderTask extends BaseSpiderTask {
 
-    private String taskName = "GewaraFilmSpiderTask";
+    private String taskName = "NuomiFilmSpiderTask";
 
     @Override
     public void process(Page page) {
@@ -31,15 +31,15 @@ public class GewaraFilmSpiderTask extends BaseSpiderTask {
             ctx.putCtxLocalItem(CrawlConstants.CTX_LOCAL_FILM, filmDtoMap);
         }
         FilmDto filmDto = new FilmDto();
-        filmDto.setFilmId(page.getUrl().regex("http://www.gewara.com/movie/([0-9]{2,30})").toString());
+        filmDto.setFilmId(page.getUrl().regex("http://nj.nuomi.com/film/([0-9]{2,30})").toString());
         filmDto.setFilmName(page.getHtml()
-                .xpath("/html/body/div[@class='clear']/div[@class='mod_top_banner']/div[@class='ui_layout']/div[@class='movieInfo']/div[@class='detail_head_name']/div[@class='clear']/h1/text()")
+                .xpath("/html/body[@class='gl-normal-screen']/div[@class='p-cinema-main clearfix']/div[@class='p-cinema-left']/div[@class='w-cinema-detail clearfix']/div[@class='content']/h2/a/text()")
                 .toString());
         filmDto.setFilmDesc(page.getHtml()
-                .xpath("/html/body/div[@class='clear']/div[@class='mod_top_banner']/div[@class='ui_layout']/div[@class='movieInfo']/p[@class='ui_summary_big']/text()")
+                .xpath("/html/body[@class='gl-normal-screen']/div[@class='p-cinema-main clearfix']/div[@class='p-cinema-left']/div[@class='w-cinema-detail clearfix']/div[@class='content']/div[@class='de']/p[2]/text()")
                 .toString());
         filmDto.setFilmPicUrl(page.getHtml()
-                .xpath("/html/body/div[@class='clear']/div[@class='mod_movie_info']/div[@class='ui_layout clear']/div[@class='detail_head_info']/div[@class='ui_media']/div[@class='ui_pic mr30']/img/@src")
+                .xpath("/html/body[@class='gl-normal-screen']/div[@class='p-cinema-main clearfix']/div[@class='p-cinema-left']/div[@class='w-cinema-detail clearfix']/img[@class='cinema-img']/@src")
                 .toString());
 
         if (filmDto.isValid()) {
@@ -59,7 +59,7 @@ public class GewaraFilmSpiderTask extends BaseSpiderTask {
 
     @Override
     public List<String> getTargetRequests(Page page) {
-        return page.getHtml().links().regex("(http://www.gewara.com/movie/[0-9]{2,30})").all();
+        return page.getHtml().links().regex("(http://nj.nuomi.com/film/[0-9]{2,30})").all();
     }
 
     @Override
@@ -69,7 +69,7 @@ public class GewaraFilmSpiderTask extends BaseSpiderTask {
 
     @Override
     public String[] getEntranceRequests() {
-        return new String[] { "http://www.gewara.com/nanjing" };
+        return new String[] { "http://nj.nuomi.com/movie/" };
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.kingco.movierobot.crawl.task.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +14,9 @@ import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.pipeline.Pipeline;
 
-public class GewaraCinemaSpiderTask extends BaseSpiderTask {
+public class NuomiCinemaSpiderTask extends BaseSpiderTask {
 
-    private String taskName = "GewaraCinemaSpiderTask";
+    private String taskName = "NuomiCinemaSpiderTask";
 
     @Override
     public void process(Page page) {
@@ -32,15 +31,15 @@ public class GewaraCinemaSpiderTask extends BaseSpiderTask {
             ctx.putCtxLocalItem(CrawlConstants.CTX_LOCAL_CINEMA, cinemaDtoMap);
         }
         CinemaDto cinemaDto = new CinemaDto();
-        cinemaDto.setCinemaId(page.getUrl().regex("http://www.gewara.com/cinema/([0-9]{2,30})").toString());
+        cinemaDto.setCinemaId(page.getUrl().regex("http://nj.nuomi.com/cinema/([a-z0-9]{2,30})").toString());
         cinemaDto.setCinemaName(page.getHtml()
-                .xpath("/html/body/div[@class='ui_layout detail_body detail_cinema_warp']/div[@class='detail_head clear']/div[@class='mod_kong']/div[@class='mod_hd detailPa']/div[@class='detailName clear']/h1[@class='left']/text()")
+                .xpath("/html/body[@class='gl-normal-screen']/div[@class='p-cinema-branch']/div[@class='w-cinema-branch clearfix']/div[@class='cinema-info']/h3/text()")
                 .toString());
         cinemaDto.setCimemaAddress(page.getHtml()
-                .xpath("/html/body/div[@class='ui_layout detail_body detail_cinema_warp']/div[@class='detail_head clear']/div[@class='mod_kong']/div[@class='mod_bd']/div[@class='ui_left']/div[@class='detail_head_info detailMa']/div[@class='ui_media']/div[@class='ui_text']/div[@class='detail_head_text']/dl[@class='clear'][1]/dd/text()")
+                .xpath("/html/body[@class='gl-normal-screen']/div[@class='p-cinema-branch']/div[@class='w-cinema-branch clearfix']/div[@class='cinema-info']/p[@class='cb-address']/text()")
                 .toString());
         cinemaDto.setCimemaPhoneNum(page.getHtml()
-                .xpath("/html/body/div[@class='ui_layout detail_body detail_cinema_warp']/div[@class='detail_head clear']/div[@class='mod_kong']/div[@class='mod_bd']/div[@class='ui_left']/div[@class='detail_head_info detailMa']/div[@class='ui_media']/div[@class='ui_text']/div[@class='detail_head_text']/dl[@class='clear'][2]/dd/text()")
+                .xpath("/html/body[@class='gl-normal-screen']/div[@class='p-cinema-branch']/div[@class='w-cinema-branch clearfix']/div[@class='cinema-info']/p[@class='cb-tel']/text()")
                 .toString());
 
         if (cinemaDto.isValid()) {
@@ -50,7 +49,7 @@ public class GewaraCinemaSpiderTask extends BaseSpiderTask {
 
     @Override
     public Site getSite() {
-        return Site.me().setRetryTimes(3).setSleepTime(100).addCookie("citycode", "320100");
+        return Site.me().setRetryTimes(3).setSleepTime(100);
     }
 
     @Override
@@ -60,7 +59,7 @@ public class GewaraCinemaSpiderTask extends BaseSpiderTask {
 
     @Override
     public List<String> getTargetRequests(Page page) {
-        return page.getHtml().links().regex("(http://www.gewara.com/cinema/[0-9]{2,30})").all();
+        return page.getHtml().links().regex("(http://nj.nuomi.com/cinema/([a-z0-9]{2,30}))").all();
     }
 
     @Override
@@ -70,12 +69,7 @@ public class GewaraCinemaSpiderTask extends BaseSpiderTask {
 
     @Override
     public String[] getEntranceRequests() {
-        ArrayList<String> urls = new ArrayList<String>();
-        urls.add("http://www.gewara.com/nanjing");
-        for (int i = 0; i < 10; i++) {
-            urls.add("http://www.gewara.com/movie/searchCinema.xhtml?pageNo=" + i);
-        }
-        return urls.toArray(new String[urls.size()]);
+        return new String[] { "http://nj.nuomi.com/cinema/" };
     }
 
     @Override
